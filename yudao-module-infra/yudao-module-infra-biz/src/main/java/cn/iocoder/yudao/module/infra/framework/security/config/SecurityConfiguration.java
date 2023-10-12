@@ -18,7 +18,8 @@ public class SecurityConfiguration {
 
     @Bean("infraAuthorizeRequestsCustomizer")
     public AuthorizeRequestsCustomizer authorizeRequestsCustomizer() {
-        return new AuthorizeRequestsCustomizer() {
+        System.out.println("authorizeRequestsCustomizer");
+        return new AuthorizeRequestsCustomizer() {// 这个被返回的Bean被注入到了 cn.iocoder.yudao.framework.security.config.YudaoWebSecurityConfigurerAdapter.authorizeRequestsCustomizers 并在cn.iocoder.yudao.framework.security.config.YudaoWebSecurityConfigurerAdapter.filterChain中被使用
 
             @Override
             public void customize(ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry registry) {

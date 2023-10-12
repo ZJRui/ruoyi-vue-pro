@@ -27,10 +27,17 @@ public class JsonUtils {
 
     private static ObjectMapper objectMapper = new ObjectMapper();
 
+    /**
+     * com.fasterxml.jackson.databind.exc.InvalidDefinitionException: Java 8 date/time type `java.time.LocalDateTime`
+     * not supported by default: add Module "com.fasterxml.jackson.datatype:jackson-datatype-jsr310" to enable handling
+     */
+
     static {
         objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        objectMapper.registerModules(new JavaTimeModule()); // 解决 LocalDateTime 的序列化
+        //使用 Jackson JSON 映射器序列化/反序列化 java 8 java.time // 解决 LocalDateTime 的序列化
+        //对localoDateTime 的序列化结果：[ 2023, 10, 11, 16, 34, 3, 249000000 ]
+       objectMapper.registerModules(new JavaTimeModule());
     }
 
     /**

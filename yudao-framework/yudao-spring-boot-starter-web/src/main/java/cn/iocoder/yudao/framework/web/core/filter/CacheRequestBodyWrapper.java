@@ -25,7 +25,11 @@ public class CacheRequestBodyWrapper extends HttpServletRequestWrapper {
 
     public CacheRequestBodyWrapper(HttpServletRequest request) {
         super(request);
+        //用了 request 缓存包装类，将 request的流给提前读取并缓存下来了
+        //为什么HttpServletRequest对象的请求体body只读取一次：
+        // HttpServletRequest使用getInputStream()与getReader()获取输入流因为读取时数据流指针的单向移动导致请求的body内容只可读取一次。
         body = ServletUtils.getBodyBytes(request);
+        //question:上面的代码，在 中提示  调用方法 IoUtil.readBytes(request.getInputStream()); 后，getParam方法将失效
     }
 
     @Override
@@ -35,6 +39,7 @@ public class CacheRequestBodyWrapper extends HttpServletRequestWrapper {
 
     @Override
     public ServletInputStream getInputStream() throws IOException {
+
         final ByteArrayInputStream inputStream = new ByteArrayInputStream(body);
         // 返回 ServletInputStream
         return new ServletInputStream() {
@@ -51,6 +56,7 @@ public class CacheRequestBodyWrapper extends HttpServletRequestWrapper {
 
             @Override
             public boolean isReady() {
+                //question:这个地方return false没有影响吗？
                 return false;
             }
 

@@ -21,6 +21,44 @@ import java.util.Set;
 @Slf4j
 public class IdTypeEnvironmentPostProcessor implements EnvironmentPostProcessor {
 
+    /**
+     * 该属性key是 mybatis-plus的配置属性，该属性的默认值是
+     * com.baomidou.mybatisplus.core.config.GlobalConfig.DbConfig#idType=IdType#ASSIGN_ID
+     * <p>
+     * E:\programme\mybatis-plus\官方文档\主键策略  IKeyGenerator I MyBatis-Plus.pdf
+     * <p>
+     * 系统启动的时候会从datasource url配置中解析出数据库类型，并根据数据库类型选择合适的mybatis 的 IdType，然后
+     * 更新 com.baomidou.mybatisplus.core.config.GlobalConfig.DbConfig.idType配置属性的值
+     *
+     *
+     *
+     * SpringBoot中配置属性的优先级：
+     * 1.命令行参数 2.来自java:comp/env的JNDI属性 3.Java系统属性（System.getProperties()）
+     * 4.操作系统环境变量 5.RandomValuePropertySource配置的random.*属性值
+     * 6.jar包外部的application-{profile}.properties或application.yml(带spring.profile)配置文件
+     * 7.jar包内部的application-{profile}.properties或application.yml(带spring.profile)配置文件
+     * 8.jar包外部的application.properties或application.yml(不带spring.profile)配置文件
+     * 9.jar包内部的application.properties或application.yml(不带spring.profile)配置文件
+     * 10.@Configuration注解类上的@PropertySource
+     * 11.通过SpringApplication.setDefaultProperties指定的默认属性
+     *
+     *
+     * 3. 外部配置文件：
+     * 外部配置文件（如application.properties、application.yml等）提供了一种更灵活的配置方式。Spring Boot支持从外部配置
+     * 文件中读取配置属性。外部配置文件的优先级低于命令行参数和环境变量。Spring Boot会按照以下顺序查找并加载外部配置文件：
+     * config/ 目录下的application.properties或application.yml
+     * 当前目录下的config/目录中的application.properties或application.yml
+     * 当前目录下的application.properties或application.yml
+     * 类路径下的config/目录中的application.properties或application.yml
+     * 类路径下的application.properties或application.yml
+     *
+     *
+     * 在这里 IdTypeEnvironmentPostProcessor 这个EnvironmentPostProcessor的postProcessEnvironment 中会将
+     * mybatis-plus.global-config.db-config.id-type属性设置到 SystemProperties中，从而覆盖掉 application.ymal中的
+     *
+     * 参考E:\programme\SpringBoot\SpringBoot 技术内幕 (Z-Library).pdf
+     *
+     */
     private static final String ID_TYPE_KEY = "mybatis-plus.global-config.db-config.id-type";
 
     private static final String DATASOURCE_DYNAMIC_KEY = "spring.datasource.dynamic";
@@ -51,6 +89,8 @@ public class IdTypeEnvironmentPostProcessor implements EnvironmentPostProcessor 
             return;
         }
         // 情况一，用户输入 ID，适合 Oracle、PostgreSQL、Kingbase、DB2、H2 数据库
+        //Oracle没有这个”auto_increment”属性，所以不能用AUTO,只能用INPUT,底层使用数据库序列实现自增
+        //，Oracle里的序列（SEQUENCE），可间接实现自增主键的作用。
         if (INPUT_ID_TYPES.contains(dbType)) {
             setIdType(environment, IdType.INPUT);
             return;

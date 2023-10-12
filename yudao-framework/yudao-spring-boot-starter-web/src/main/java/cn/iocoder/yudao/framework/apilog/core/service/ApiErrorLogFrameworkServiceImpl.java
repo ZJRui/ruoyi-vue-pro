@@ -13,7 +13,7 @@ import org.springframework.scheduling.annotation.Async;
  *
  * @author 芋道源码
  */
-@RequiredArgsConstructor
+@RequiredArgsConstructor//生成构造器，使用final字段作为入参
 public class ApiErrorLogFrameworkServiceImpl implements ApiErrorLogFrameworkService {
 
     private final ApiErrorLogApi apiErrorLogApi;

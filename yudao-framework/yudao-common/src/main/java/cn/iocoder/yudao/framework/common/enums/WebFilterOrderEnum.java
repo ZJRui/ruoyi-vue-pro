@@ -5,8 +5,10 @@ package cn.iocoder.yudao.framework.common.enums;
  *
  *  考虑到每个 starter 都需要用到该工具类，所以放到 common 模块下的 enums 包下
  *
+ *
  * @author 芋道源码
  */
+@SuppressWarnings("all")
 public interface WebFilterOrderEnum {
 
     int CORS_FILTER = Integer.MIN_VALUE;

@@ -33,6 +33,13 @@ import java.util.Set;
  * @author 芋道源码
  */
 @AutoConfiguration
+/**
+ * EnableGloablMethodSecurity:开启通过注解来配置方法的权限信息
+ * prePostEnabled:决定Spring Security的前注解是否可用 [@PreAuthorize,@PostAuthorize,..]
+ * securedEnabled:决定Spring Security的保障注解[@Secured]是否可用
+ *
+ */
+@SuppressWarnings("all")
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 public class YudaoWebSecurityConfigurerAdapter {
 
@@ -115,9 +122,9 @@ public class YudaoWebSecurityConfigurerAdapter {
         // 设置每个请求的权限
         httpSecurity
                 // ①：全局共享规则
-                .authorizeRequests()
+                .authorizeRequests()//http.authorizeRequest()开启URL路径拦截规则配置，会通过AbstractInterceptUrlConfigurer#configure方法将FilterSecurityInterceptor添加到Spring Security过滤链中
                 // 1.1 静态资源，可匿名访问
-                .antMatchers(HttpMethod.GET, "/*.html", "/**/*.html", "/**/*.css", "/**/*.js").permitAll()
+                .antMatchers(HttpMethod.GET, "/*.html", "/**/*.html", "/**/*.css", "/**/*.js","/favicon.ico").permitAll()
                 // 1.2 设置 @PermitAll 无需认证
                 .antMatchers(HttpMethod.GET, permitAllUrls.get(HttpMethod.GET).toArray(new String[0])).permitAll()
                 .antMatchers(HttpMethod.POST, permitAllUrls.get(HttpMethod.POST).toArray(new String[0])).permitAll()
@@ -132,6 +139,8 @@ public class YudaoWebSecurityConfigurerAdapter {
                 // 1.6 webSocket 允许匿名访问
                 .antMatchers("/websocket/message").permitAll()
                 // ②：每个项目的自定义规则
+                //question:为什么有的时候调用authorizeRequest有的时候不调用呢？下面的代码
+                // 所有的authorizeRequestsCustomizers 都共用同一个authorizeRequests
                 .and().authorizeRequests(registry -> // 下面，循环设置自定义规则
                         authorizeRequestsCustomizers.forEach(customizer -> customizer.customize(registry)))
                 // ③：兜底规则，必须认证

@@ -17,10 +17,17 @@ import static cn.iocoder.yudao.framework.common.exception.enums.GlobalErrorCodeC
  *
  * @author 芋道源码
  */
+@SuppressWarnings("all")
+
 public class DemoFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
+        /**
+         * 是否应该不进行过滤：
+         * 1.post,put,delete请求需要过滤，返回false
+         * 2.没有登录用户，进行过滤，返回false
+         */
         String method = request.getMethod();
         return !StrUtil.equalsAnyIgnoreCase(method, "POST", "PUT", "DELETE")  // 写操作时，不进行过滤率
                 || WebFrameworkUtils.getLoginUserId(request) == null; // 非登录用户时，不进行过滤

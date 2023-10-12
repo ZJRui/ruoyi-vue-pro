@@ -19,6 +19,11 @@ public class CacheRequestBodyFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws IOException, ServletException {
+        //zjr
+        if(request instanceof  CacheRequestBodyWrapper){
+            filterChain.doFilter(request,response);
+            return;
+        }
         filterChain.doFilter(new CacheRequestBodyWrapper(request), response);
     }
 

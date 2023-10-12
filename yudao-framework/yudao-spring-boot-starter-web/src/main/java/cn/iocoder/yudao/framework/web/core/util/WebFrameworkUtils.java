@@ -25,6 +25,9 @@ public class WebFrameworkUtils {
 
     public static final String HEADER_TENANT_ID = "tenant-id";
 
+    /**
+     * 静态属性值
+     */
     private static WebProperties properties;
 
     public WebFrameworkUtils(WebProperties webProperties) {

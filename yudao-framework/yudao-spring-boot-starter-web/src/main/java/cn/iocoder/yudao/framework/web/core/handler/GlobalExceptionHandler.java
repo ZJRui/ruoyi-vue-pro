@@ -42,7 +42,7 @@ import static cn.iocoder.yudao.framework.common.exception.enums.GlobalErrorCodeC
  * @author 芋道源码
  */
 @RestControllerAdvice
-@AllArgsConstructor
+// @AllArgsConstructor
 @Slf4j
 public class GlobalExceptionHandler {
 
@@ -51,8 +51,31 @@ public class GlobalExceptionHandler {
     private final ApiErrorLogFrameworkService apiErrorLogFrameworkService;
 
     /**
+     *
+     * careful: 这个类使用了@RestControllerAdvice标注，他聚合了@Component，但是 启动类扫描的包只有 cn.iocoder.yudao.server
+     *  cn.iocoder.yudao.module 所以这个类不会被扫描到。 而是依赖于自动配置类YudaoWebAutoConfiguration
+     *
+     * note:这个类一方面作为 RestControllerAdvice 使用@ExceptionHandler注解处理异常。另一方面 作为一个Spring Bean，其他类中可以调用
+     *  globalExceptionHandler.allExceptionHandler(request, ex);来手动处理异常
+     *
+     *
+     *
+     * @param applicationName
+     * @param apiErrorLogFrameworkService
+     */
+    public GlobalExceptionHandler(String applicationName, ApiErrorLogFrameworkService apiErrorLogFrameworkService) {
+        //调用该构造器时会手动注入applicationName
+        this.applicationName = applicationName;
+        this.apiErrorLogFrameworkService = apiErrorLogFrameworkService;
+    }
+
+
+
+    /**
      * 处理所有异常，主要是提供给 Filter 使用
      * 因为 Filter 不走 SpringMVC 的流程，但是我们又需要兜底处理异常，所以这里提供一个全量的异常处理过程，保持逻辑统一。
+     *
+     * note:
      *
      * @param request 请求
      * @param ex 异常
@@ -162,6 +185,10 @@ public class GlobalExceptionHandler {
      * 注意，它需要设置如下两个配置项：
      * 1. spring.mvc.throw-exception-if-no-handler-found 为 true
      * 2. spring.mvc.static-path-pattern 为 /statics/**
+     *
+     *
+     * spring.mvc.throw-exception-if-no-handler-found：默认情况下，该参数的值为false，即当找不到请求处理器时，
+     * Spring MVC会返回404 Not Found响应。如果将该参数设置为true，则当找不到请求处理器时，Spring MVC会抛出NoHandlerFoundException异常。
      */
     @ExceptionHandler(NoHandlerFoundException.class)
     public CommonResult<?> noHandlerFoundExceptionHandler(HttpServletRequest req, NoHandlerFoundException ex) {

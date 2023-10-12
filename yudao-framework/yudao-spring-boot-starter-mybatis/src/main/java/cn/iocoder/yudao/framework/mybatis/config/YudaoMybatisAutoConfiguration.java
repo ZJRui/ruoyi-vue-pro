@@ -23,6 +23,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
 @AutoConfiguration
 @MapperScan(value = "${yudao.info.base-package}", annotationClass = Mapper.class,
         lazyInitialization = "${mybatis.lazy-initialization:false}") // Mapper 懒加载，目前仅用于单元测试
+@SuppressWarnings("all")
 public class YudaoMybatisAutoConfiguration {
 
     @Bean
@@ -37,6 +38,15 @@ public class YudaoMybatisAutoConfiguration {
         return new DefaultDBFieldHandler(); // 自动填充参数类
     }
 
+    /**
+     *
+     *
+     * 配置文件中配置的   id-type: NONE # “智能”模式，基于 IdTypeEnvironmentPostProcessor + 数据源的类型，自动适配成 AUTO、INPUT 模式。
+     *
+     *
+     * @param environment
+     * @return
+     */
     @Bean
     @ConditionalOnProperty(prefix = "mybatis-plus.global-config.db-config", name = "id-type", havingValue = "INPUT")
     public IKeyGenerator keyGenerator(ConfigurableEnvironment environment) {

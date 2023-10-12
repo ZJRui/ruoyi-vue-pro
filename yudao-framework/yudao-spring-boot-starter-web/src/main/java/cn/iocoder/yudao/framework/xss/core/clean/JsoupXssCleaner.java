@@ -34,6 +34,9 @@ public class JsoupXssCleaner implements XssCleaner {
      * @return Safelist
      */
     private Safelist buildSafelist() {
+        //note: jsoup 是一款基于 Java 的HTML解析器，它提供了一套非常省力的API，
+        // 不但能直接解析某个URL地址、HTML文本内容，而且还能通过类似于DOM、CSS或者jQuery的方法来操作数据，所以 jsoup 也可以被当做爬虫工具使用。
+
         // 使用 jsoup 提供的默认的
         Safelist relaxedSafelist = Safelist.relaxed();
         // 富文本编辑时一些样式是使用 style 来进行实现的
@@ -57,6 +60,10 @@ public class JsoupXssCleaner implements XssCleaner {
 
     @Override
     public String clean(String html) {
+        //note: jsoup 是一款基于 Java 的HTML解析器，它提供了一套非常省力的API，
+        // 不但能直接解析某个URL地址、HTML文本内容，而且还能通过类似于DOM、CSS或者jQuery的方法来操作数据，所以 jsoup 也可以被当做爬虫工具使用。
+
+
         return Jsoup.clean(html, baseUri, safelist, new Document.OutputSettings().prettyPrint(false));
     }
 

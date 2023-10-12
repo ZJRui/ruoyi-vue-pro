@@ -55,6 +55,7 @@ public class YudaoXssAutoConfiguration implements WebMvcConfigurer {
     @Bean
     @ConditionalOnBean(XssCleaner.class)
     public FilterRegistrationBean<XssFilter> xssFilter(XssProperties properties, PathMatcher pathMatcher, XssCleaner xssCleaner) {
+        //note:xsscleaner在上面的bean中已经被创建了
         return createFilterBean(new XssFilter(properties, pathMatcher, xssCleaner), WebFilterOrderEnum.XSS_FILTER);
     }
 
