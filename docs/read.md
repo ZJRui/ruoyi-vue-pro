@@ -1,5 +1,5 @@
 
-#启动
+# 启动
 ```agsl
 pro-projects\ruoyi-vue-pro\yudao-server\target\classes started by 40294 in D:\LocalProjects\ruoyi-vue-pro-projects\ruoyi-vue-pro)
 2023-10-08 21:51:28.511 |  INFO 39380 | main [TID: N/A] c.i.yudao.server.YudaoServerApplication  | The following 1 profile is active: "local"
@@ -20,3 +20,10 @@ pro-projects\ruoyi-vue-pro\yudao-server\target\classes started by 40294 in D:\Lo
 2023-10-08 21:52:18.010 |  INFO 39380 | main [TID: N/A] c.b.d.d.DynamicRoutingDataSource         | dynamic-datasource initial loaded [2] datasource,primary datasource named [master]
 2023-10-08 21:52:18.622 |  INFO 39380 | main [TID: N/A] c.g.y.a.MybatisPlusJoinAutoConfiguration | MPJSqlInjector init
 ```
+
+ 
+# Mybatis-plus
+
+## id-type属性
+
+![img.png](imgs/img.png)

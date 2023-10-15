@@ -41,6 +41,9 @@ public class SecurityConfiguration {
                 registry.antMatchers(adminSeverContextPath).anonymous()
                         .antMatchers(adminSeverContextPath + "/**").anonymous();
                 // 文件读取
+               ///infra/file/*/get/**  中的/* 和/**有什么区别
+                ///* 匹配单层路径，只匹配一个路径段。
+                ///** 匹配多层路径，匹配零个或多个路径段。
                 registry.antMatchers(buildAdminApi("/infra/file/*/get/**")).permitAll();
             }
 

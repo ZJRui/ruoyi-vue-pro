@@ -47,6 +47,8 @@ public class YudaoWebAutoConfiguration implements WebMvcConfigurer {
          * configurePathMatch:帮助配置HandlerMapping路径匹配选项，例如是否使用解析的PathPatterns或与PathMatcher匹配的字符串模式，是否匹配尾部斜杠等。
          * **.controller.admin.** 包下的controller 添加/admin-api前缀
          * **.controller.app.** 包下的controller 添加/app-api前缀
+         *
+         * 给Controller的RequestMapping添加统一前缀
          */
         configurePathMatch(configurer, webProperties.getAdminApi());
         configurePathMatch(configurer, webProperties.getAppApi());

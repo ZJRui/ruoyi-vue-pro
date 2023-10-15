@@ -6,6 +6,7 @@ import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.system.controller.admin.tenant.vo.tenant.TenantExportReqVO;
 import cn.iocoder.yudao.module.system.controller.admin.tenant.vo.tenant.TenantPageReqVO;
 import cn.iocoder.yudao.module.system.dal.dataobject.tenant.TenantDO;
+import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -39,6 +40,12 @@ public interface TenantMapper extends BaseMapperX<TenantDO> {
     }
 
     default TenantDO selectByName(String name) {
+        SFunction<TenantDO,String> sFunction=new SFunction<TenantDO,String> () {
+            @Override
+            public String apply(TenantDO o) {
+                return  o.getName();
+            }
+        };
         return selectOne(TenantDO::getName, name);
     }
 

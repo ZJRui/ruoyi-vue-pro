@@ -48,6 +48,11 @@ public class OAuth2TokenServiceImpl implements OAuth2TokenService {
     @Transactional
     public OAuth2AccessTokenDO createAccessToken(Long userId, Integer userType, String clientId, List<String> scopes) {
         OAuth2ClientDO clientDO = oauth2ClientService.validOAuthClientFromCache(clientId);
+        /**
+         * 如果访问令牌受到劫持，由于它的存在是短时间的，所以对访问令牌的滥用是控制在一定范围内的。
+         * 如果刷新令牌被劫持，基本上无害的，攻击者需要得到 client_id,secrect_id (通常存储在服务器上)，再加上刷新令牌才可以进行操作。
+         *
+         */
         // 创建刷新令牌
         OAuth2RefreshTokenDO refreshTokenDO = createOAuth2RefreshToken(userId, userType, clientDO, scopes);
         // 创建访问令牌

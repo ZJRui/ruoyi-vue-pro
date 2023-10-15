@@ -19,6 +19,8 @@ public class DefaultDBFieldHandler implements MetaObjectHandler {
 
     @Override
     public void insertFill(MetaObject metaObject) {
+
+        this.strictInsertFill(metaObject, "createTime", LocalDateTime.class, LocalDateTime.now());
         if (Objects.nonNull(metaObject) && metaObject.getOriginalObject() instanceof BaseDO) {
             BaseDO baseDO = (BaseDO) metaObject.getOriginalObject();
 
@@ -46,11 +48,12 @@ public class DefaultDBFieldHandler implements MetaObjectHandler {
 
     @Override
     public void updateFill(MetaObject metaObject) {
-        // 更新时间为空，则以当前时间为更新时间
+        // 更新时间为空，则以当前时间为更新时间  question: 对象里面的updateTime 为什么会是空的？
         Object modifyTime = getFieldValByName("updateTime", metaObject);
         if (Objects.isNull(modifyTime)) {
             setFieldValByName("updateTime", LocalDateTime.now(), metaObject);
         }
+
 
         // 当前登录用户不为空，更新人为空，则当前登录用户为更新人
         Object modifier = getFieldValByName("updater", metaObject);

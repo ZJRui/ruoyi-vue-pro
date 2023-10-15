@@ -26,6 +26,14 @@ public class IntegerListTypeHandler implements TypeHandler<List<Integer>> {
 
     @Override
     public void setParameter(PreparedStatement ps, int i, List<Integer> strings, JdbcType jdbcType) throws SQLException {
+        /**
+         * 如果MySQL一张表中一个字段存储的数据格式是"1,2,3,4,5"，也就是逗号分隔的，
+         * 我如何能让别的使用者在无感知的情况下，只用List<Integer>来传输和接收？持久层用的MyBatis
+         *
+         *
+         * 插入之前：将List中的数据转换为以逗号分隔的字符串
+         * 查询之后：将逗号分隔的字符串转换为List结构
+         */
         ps.setString(i, CollUtil.join(strings, COMMA));
     }
 

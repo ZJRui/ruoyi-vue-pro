@@ -3,11 +3,14 @@ package cn.iocoder.yudao.module.system.controller.admin.captcha;
 import cn.hutool.core.util.StrUtil;
 import cn.iocoder.yudao.framework.common.util.servlet.ServletUtils;
 import cn.iocoder.yudao.framework.operatelog.core.annotations.OperateLog;
+import cn.iocoder.yudao.framework.security.core.annotations.TestAopAnno;
+import cn.iocoder.yudao.module.system.test.service.HelloService;
 import com.xingyuv.captcha.model.common.ResponseModel;
 import com.xingyuv.captcha.model.vo.CaptchaVO;
 import com.xingyuv.captcha.service.CaptchaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,13 +33,16 @@ public class CaptchaController {
     @Resource
     private CaptchaService captchaService;
 
+    @Autowired
+    HelloService helloService;
     @PostMapping({"/get"})
     @Operation(summary = "获得验证码")
-    @PermitAll
+    @PermitAll //------------->使用了自定义注解标注 因此不需要权限
     @OperateLog(enable = false) // 避免 Post 请求被记录操作日志
     public ResponseModel get(@RequestBody CaptchaVO data, HttpServletRequest request) {
         assert request.getRemoteHost() != null;
         data.setBrowserInfo(getRemoteId(request));
+        helloService.sayHello();
         return captchaService.get(data);
     }
 

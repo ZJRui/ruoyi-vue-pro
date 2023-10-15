@@ -17,7 +17,46 @@ import java.util.Map;
 /**
  * 站内信 DO
  *
+ *
  * @author xrcoder
+ */
+
+/**
+ *
+ * careful: typeHandler用来指定 对象转为sql参数，或者从ResultSet取出一个值时，如何做转换。
+ *  但是并不是说你 给某一个字段指定了使用某一个typeHandler 他就能够自动的将对象转为sql参数，或者从ResultSet取出一个值时，如何做转换。
+ *
+ *   @TableField(value = "email", typeHandler = JacksonTypeHandler.class)
+ *   private Address address;
+ * 1.address属性指定了使用json handler，当insert update的时候会 自动将对象转为 json字符串。
+ *
+ * 2.在select的时候 仅仅配置 typeHandler是不够的。显示启用typeHandler有两种方式 :
+ * (1)指定了与自定义 typeHandler 一致的 jdbcType 和 javaType
+ * (2)直接使用typeHandler 指定具体 的 实现类
+ *
+ * A.依赖于ResultMap,在ReulstMap 中的result标签中指定typeHandler,比如
+ *   <resultMap id="myCustomResultMap">
+ *        <result column="email" property="address" typeHandler="JacksonTypeHandler"/>
+ *    </resultMap>
+ *
+ *  然后给select语句指定resultMap。
+ *
+ * B.也可以在sql语句中对参数指定typeHandler:
+ *     <select  i d=” findRoles ” parameterType=” string ” resultMap=” roleMapper” >
+ *   select  id,  r ole  name ,  note  from  t  role
+ *   where  role  name  like  concat （ ’ 哇 ’， ＃｛ roleName , jdbcType=VARCHAR,
+ *   javaType=string ｝ ，’ 告 ’ ）
+ *   </select>
+ *
+ *
+ *careful：关于自动映射，mybatis的autoMappingBehavior默认为partial, 他只会自动映射没有定义嵌套映射的ResultSet,
+ * 假设Person中有一个Address对象嵌套属性，那么select查询到的Person 默认的自动映射就不会映射address属性，也就是address属性为空。
+ *
+ * E:\programme\mybatis\博文\mybatis3 autoMappingBehavior - TheViper_ - 博客园.pdf
+ *
+ * mybatis-plus的@TableName的autoResultMap的作用就是生成一个ResutMap让mybatis用这个ResultMap来完成自动映射。
+ *
+ *
  */
 @TableName(value = "system_notify_message", autoResultMap = true)
 @KeySequence("system_notify_message_seq") // 用于 Oracle、PostgreSQL、Kingbase、DB2、H2 数据库的主键自增。如果是 MySQL 等数据库，可不写。

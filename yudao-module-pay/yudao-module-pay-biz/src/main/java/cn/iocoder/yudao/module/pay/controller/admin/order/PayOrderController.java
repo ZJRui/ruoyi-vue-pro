@@ -44,6 +44,10 @@ import static cn.iocoder.yudao.framework.web.core.util.WebFrameworkUtils.getLogi
 @Validated
 public class PayOrderController {
 
+    public PayOrderController(){
+        System.out.println("PayOrderController");
+    }
+
     @Resource
     private PayOrderService orderService;
     @Resource

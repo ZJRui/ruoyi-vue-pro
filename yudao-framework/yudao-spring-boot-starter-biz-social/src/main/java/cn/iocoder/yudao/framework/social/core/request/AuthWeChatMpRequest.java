@@ -41,6 +41,11 @@ public class AuthWeChatMpRequest extends AuthDefaultRequest {
      */
     @Override
     protected AuthToken getAccessToken(AuthCallback authCallback) {
+        /**
+         * question: 在jushauth中已经提供了针对 微信公众号的request： com.xingyuv.jushauth.request.AuthWeChatMpRequest
+         *  不理解这里为什么还要自己定义 对接微信公众号的request
+         *
+         */
         return this.getToken(accessTokenUrl(authCallback.getCode()));
     }
 

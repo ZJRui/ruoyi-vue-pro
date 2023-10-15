@@ -34,6 +34,9 @@ public class AuthLoginReqVO {
 
     // ========== 图片验证码相关 ==========
 
+    //careful:这个NotEmpty注解指定了分组校验groups属性，在login的controller中@Validated并没有使用
+    // @Validated({AuthLoginReqVO.CodeEnableGroup.class})这种注解开启分组校验。而是在 validateCaptcha方法中手动进行了分组校验
+    //
     @Schema(description = "验证码，验证码开启时，需要传递", requiredMode = Schema.RequiredMode.REQUIRED,
             example = "PfcH6mgr8tpXuMWFjvW6YVaqrswIuwmWI5dsVZSg7sGpWtDCUbHuDEXl3cFB1+VvCC/rAkSwK8Fad52FSuncVg==")
     @NotEmpty(message = "验证码不能为空", groups = CodeEnableGroup.class)

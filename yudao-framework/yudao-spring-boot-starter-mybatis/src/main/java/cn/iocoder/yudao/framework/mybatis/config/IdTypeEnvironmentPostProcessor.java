@@ -21,8 +21,26 @@ import java.util.Set;
 @Slf4j
 public class IdTypeEnvironmentPostProcessor implements EnvironmentPostProcessor {
 
+
     /**
-     * 该属性key是 mybatis-plus的配置属性，该属性的默认值是
+     * note:实现原理
+     *
+     * 1.注意该类是spring boot的类，该类并没有被 @Component 容器扫描到， 该类是配置在了spring.factories文件中的。
+     * 该类的执行时机和原理参考《E:\programme\SpringBoot\SpringBoot 技术内幕 (Z-Library).pdf》 5.4 application.properties配置文件的加载
+     *
+     * 2.application.properties配置文件的加载也是通过 EnvironmentPostProcessor的实现类ConfigDataEnvironmentPostProcessor来完成的。
+     * 当 springboot启动的时候会 在org.springframework.boot.SpringApplication#prepareEnvironment(org.springframework.boot.SpringApplicationRunListeners, org.springframework.boot.DefaultBootstrapContext, org.springframework.boot.ApplicationArguments)
+     * 中先准备一个Environment，包含了命令行、系统属性。然后发布一个ApplicationEnvironmentPreparedEvent事件，
+     * 然后EnvironmentPostProcessorApplicationListener 监听到事件，调用所有的 EnvironmentPostProcessor的实现类的postProcessEnvironment方法，
+     *
+     * 3.基于以上的第2点，当前IdTypeEnvironmentPostProcessor 的getDbType方法可以使用  environment.getProperty(DATASOURCE_DYNAMIC_KEY + "." + "primary");
+     * 来获取已经从application.properties文件中加载得到的 数据库url属性值，然后根据该url属性值来获取数据库类型。
+     *
+     */
+
+
+    /**
+     * 该属性key是 mybatis-plus的配置属性，该属性的默认值是assign_id
      * com.baomidou.mybatisplus.core.config.GlobalConfig.DbConfig#idType=IdType#ASSIGN_ID
      * <p>
      * E:\programme\mybatis-plus\官方文档\主键策略  IKeyGenerator I MyBatis-Plus.pdf
@@ -63,6 +81,22 @@ public class IdTypeEnvironmentPostProcessor implements EnvironmentPostProcessor 
 
     private static final String DATASOURCE_DYNAMIC_KEY = "spring.datasource.dynamic";
 
+    /**
+     * 1.spring-boot 集成quartz 是通过引入 //<artifactId>spring-boot-starter-quartz</artifactId>
+     *
+     * 2.quartz 本身有一个配置项，用来配置Job的存储方式，如果你用mysql存储，那么就需要配置这个属性
+     * # In your Quartz properties file, you'll need to set
+     * # org.quartz.jobStore.driverDelegateClass = org.quartz.impl.jdbcjobstore.StdJDBCDelegate
+     *
+     * 3.spring-boot-autoconfigure-2xxx.RELEASE.jar!\org\springframework\boot\autoconfigure\quartz\QuartzProperties.class
+     * 提供了对quartz的配置项的支持，通过spring.quartz 前缀来配置,比如 spring.quartz.autoStartup
+     *
+     * 4.为什么下面是 spring.quartz.properties 这个前缀？ 因为QuartzProperties这个类中有一个 Map<String, String> properties = new HashMap<>();
+     * 这个properties属性可以用来防止很多的配置项，比如org.quartz.jobStore.driverDelegateClass。
+     *
+     *
+     * 5.Quartz JobStore 对应的 Driver
+     */
     private static final String QUARTZ_JOB_STORE_DRIVER_KEY = "spring.quartz.properties.org.quartz.jobStore.driverDelegateClass";
 
     private static final Set<DbType> INPUT_ID_TYPES = SetUtils.asSet(DbType.ORACLE, DbType.ORACLE_12C,
@@ -95,7 +129,7 @@ public class IdTypeEnvironmentPostProcessor implements EnvironmentPostProcessor 
             setIdType(environment, IdType.INPUT);
             return;
         }
-        // 情况二，自增 ID，适合 MySQL 等直接自增的数据库
+        // 情况二，自增 ID，适合 MySQL 等直接自增的数据库, @TableId的type属性没有指定的时候就会使用mybatis的全局配置中的id-type属性，mybatis-plus.global-config.db-config.id-type
         setIdType(environment, IdType.AUTO);
     }
 

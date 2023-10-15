@@ -103,6 +103,7 @@ public class OAuth2ClientServiceImpl implements OAuth2ClientService {
     @Cacheable(cacheNames = RedisKeyConstants.OAUTH_CLIENT, key = "#clientId",
             unless = "#result == null")
     public OAuth2ClientDO getOAuth2ClientFromCache(String clientId) {
+        //cache的配置YudaoCacheAutoConfiguration
         return oauth2ClientMapper.selectByClientId(clientId);
     }
 

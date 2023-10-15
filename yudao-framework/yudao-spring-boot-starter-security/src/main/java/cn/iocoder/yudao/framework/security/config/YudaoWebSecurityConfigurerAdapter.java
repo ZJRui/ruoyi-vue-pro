@@ -23,6 +23,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 
 import javax.annotation.Resource;
 import javax.annotation.security.PermitAll;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -86,7 +87,7 @@ public class YudaoWebSecurityConfigurerAdapter {
 
     /**
      * 配置 URL 的安全配置
-     *
+     * <p>
      * anyRequest          |   匹配所有请求路径
      * access              |   SpringEl表达式结果为true时可以访问
      * anonymous           |   匿名可以访问
@@ -105,7 +106,22 @@ public class YudaoWebSecurityConfigurerAdapter {
     protected SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         // 登出
         httpSecurity
-                // 开启跨域
+                /**
+                 * 开启跨域
+                 * 1.普通项目，Spring对跨域的支持 @CrossOrigin，每一个方法上都去加注解未免太麻烦了，WebMvcConfigurer.addCorsMappings
+                 *  registry.addMapping("/**")
+                 *         .allowedOrigins("http://localhost:8081")
+                 *         .allowedMethods("*")
+                 *         .allowedHeaders("*");
+                 *
+                 *  CorsInterceptor DefaultCorsProcessor#processRequest, 这 里 的 跨 域 校 验 是 由DispatcherServlet中的方法触发的，而DispatcherServlet的执行是
+                 * 在Filter之后，这一点需要牢记，我们后面将会用到。
+                 * 2.CorsFilter是Spring Web中提供的一个处理跨域的过滤器，开发者也可以通过该过滤器处理跨域
+                 *
+                 * 3.　Spring Security处理方案,当我们为项目添加了Spring Security依赖之后，发现上面三种跨域方式有的失效了，有的则可以继续使用，这是怎么回事.原因就是filter先后的问题。
+                 * CorsInterceptor是在Filter之后执行的，而Spring Security的过滤器是在CorsInterceptor之前执行的，所以CorsInterceptor失效了。
+                 * spring-security: cors() 方 法 开 启 了 对CorsConfigurer 的 配置,这里一共有四种不同的方式获取CorsFilter：
+                 */
                 .cors().and()
                 // CSRF 禁用，因为不使用 Session
                 .csrf().disable()
@@ -122,9 +138,9 @@ public class YudaoWebSecurityConfigurerAdapter {
         // 设置每个请求的权限
         httpSecurity
                 // ①：全局共享规则
-                .authorizeRequests()//http.authorizeRequest()开启URL路径拦截规则配置，会通过AbstractInterceptUrlConfigurer#configure方法将FilterSecurityInterceptor添加到Spring Security过滤链中
+                .authorizeRequests()// http.authorizeRequest()开启URL路径拦截规则配置，会通过AbstractInterceptUrlConfigurer#configure方法将FilterSecurityInterceptor添加到Spring Security过滤链中
                 // 1.1 静态资源，可匿名访问
-                .antMatchers(HttpMethod.GET, "/*.html", "/**/*.html", "/**/*.css", "/**/*.js","/favicon.ico").permitAll()
+                .antMatchers(HttpMethod.GET, "/*.html", "/**/*.html", "/**/*.css", "/**/*.js", "/favicon.ico").permitAll()
                 // 1.2 设置 @PermitAll 无需认证
                 .antMatchers(HttpMethod.GET, permitAllUrls.get(HttpMethod.GET).toArray(new String[0])).permitAll()
                 .antMatchers(HttpMethod.POST, permitAllUrls.get(HttpMethod.POST).toArray(new String[0])).permitAll()
@@ -139,7 +155,7 @@ public class YudaoWebSecurityConfigurerAdapter {
                 // 1.6 webSocket 允许匿名访问
                 .antMatchers("/websocket/message").permitAll()
                 // ②：每个项目的自定义规则
-                //question:为什么有的时候调用authorizeRequest有的时候不调用呢？下面的代码
+                // question:为什么有的时候调用authorizeRequest有的时候不调用呢？下面的代码
                 // 所有的authorizeRequestsCustomizers 都共用同一个authorizeRequests
                 .and().authorizeRequests(registry -> // 下面，循环设置自定义规则
                         authorizeRequestsCustomizers.forEach(customizer -> customizer.customize(registry)))
@@ -169,6 +185,7 @@ public class YudaoWebSecurityConfigurerAdapter {
             if (!handlerMethod.hasMethodAnnotation(PermitAll.class)) {
                 continue;
             }
+            // 当使用通过PathMatcher进行的字符串模式匹配时，返回模式条件。这与getPathPatternsCondition（）互斥，因此当一个返回null时，另一个返回实例。
             if (entry.getKey().getPatternsCondition() == null) {
                 continue;
             }

@@ -54,6 +54,24 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
                 // 2. 设置当前用户
                 if (loginUser != null) {
+                    /**
+                     * note:正常情况下 使用security的时候登录的时候输入用户名和密码 security进行验证是否正确，然后创建一个Authentication对象，
+                     *  然后将该对象放入到SecurityContextHolder中，然后请求会被FilterSecurityInterceptor拦截，然后从SecurityContextHolder中获取Authentication对象，
+                     *  如果获取不到Authentication对象，则抛出异常让用户登录； 如果获取到 Authentication 则使用 accessDecisionManager.decide 方法进行鉴权,校验当前这个Authentication是否
+                     *  有权限访问该url资源.
+                     *  但是在这里，我们并没有使用Security的认证功能
+                     *
+                     * note:用户认证（Authentication）和用户授权（Authorization）两个部分。
+                     *  认证：校验用户名和密码，认证的过程是 AbstractAuthenticationProcessingFilter（UsernamePasswordAuthenticationFilter）
+                     *  拦截到请求，然后执行尝试认证方法（attemptAuthentication），首先使用当前用户名和密码创建一个Authentication
+                     *  ，UsernamePasswordAuthenticationToken。 然后使用this.getAuthenticationManager().authenticate(authRequest);
+                     *  对这个authentication进行认证。认证成功后放置到SecurityContextHolder中。
+                     *  授权：校验当前的Authentication是否有权限访问资源。在FilterSecurityInterceptor中拦截到请求，然后先检查是否已经
+                     *  有了Authentication，没有则抛出异常让用户先进行登录认证。如果有Authentication，则尝试授权attemptAuthorization，
+                     *  授权是使用了AccessDecisionManager.decide(authentication,resourceObject)
+                     *
+                     *
+                     */
                     SecurityFrameworkUtils.setLoginUser(loginUser, request);
                 }
             } catch (Throwable ex) {
@@ -69,7 +87,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
     private LoginUser buildLoginUserByToken(String token, Integer userType) {
         try {
-            OAuth2AccessTokenCheckRespDTO accessToken = oauth2TokenApi.checkAccessToken(token);
+            OAuth2AccessTokenCheckRespDTO accessToken = oauth2TokenApi.checkAccessToken(token);// cheAccessToken当根据token获取不到token信息，或者该token过期的时候就会抛出异常，这里进行了catch
             if (accessToken == null) {
                 return null;
             }
@@ -88,11 +106,11 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
     /**
      * 模拟登录用户，方便日常开发调试
-     *
+     * <p>
      * 注意，在线上环境下，一定要关闭该功能！！！
      *
-     * @param request 请求
-     * @param token 模拟的 token，格式为 {@link SecurityProperties#getMockSecret()} + 用户编号
+     * @param request  请求
+     * @param token    模拟的 token，格式为 {@link SecurityProperties#getMockSecret()} + 用户编号
      * @param userType 用户类型
      * @return 模拟的 LoginUser
      */

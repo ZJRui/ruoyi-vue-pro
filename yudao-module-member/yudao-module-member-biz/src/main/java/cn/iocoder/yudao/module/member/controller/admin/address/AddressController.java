@@ -26,6 +26,10 @@ import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 @Validated
 public class AddressController {
 
+
+    public AddressController(){
+        System.out.println("AddressController");
+    }
     @Resource
     private AddressService addressService;
 

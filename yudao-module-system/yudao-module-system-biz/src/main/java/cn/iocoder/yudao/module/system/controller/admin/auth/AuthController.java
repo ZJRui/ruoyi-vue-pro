@@ -82,7 +82,7 @@ public class AuthController {
     }
 
     @PostMapping("/refresh-token")
-    @PermitAll
+    @PermitAll //------------------>使用自定义注解标注因此不需要权限
     @Operation(summary = "刷新令牌")
     @Parameter(name = "refreshToken", description = "刷新令牌", required = true)
     @OperateLog(enable = false) // 避免 Post 请求被记录操作日志

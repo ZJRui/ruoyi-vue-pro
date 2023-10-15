@@ -41,7 +41,7 @@ public class YudaoMybatisAutoConfiguration {
     /**
      *
      *
-     * 配置文件中配置的   id-type: NONE # “智能”模式，基于 IdTypeEnvironmentPostProcessor + 数据源的类型，自动适配成 AUTO、INPUT 模式。
+     * 当id-type=IdType.input的时候会使用 IKeyGenerator填充id，主键序列
      *
      *
      * @param environment

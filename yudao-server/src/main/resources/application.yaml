@@ -76,7 +76,10 @@ mybatis-plus:
     banner: false # 关闭控制台的 Banner 打印
   type-aliases-package: ${yudao.info.base-package}.module.*.dal.dataobject
   encryptor:
-    password: XDV71a+xqStEA3WH # 加解密的秘钥，可使用 https://www.imaegoo.com/2020/aes-key-generator/ 网站生成
+    ## 加解密的秘钥，可使用 https://www.imaegoo.com/2020/aes-key-generator/ 网站生成 ,AES 密钥在线生成器
+    # careful:mybatis-plus.encryptor.password这个属性不是mybatis-plus的官方属性，只是我们在这里定义了这样一个属性，然后在EncryptTypeHandler中使用
+    # careful:这个加密的使用原理是 Entity中字段使用 @TableField 注解指定使用自定义的EncryptTypeHandler，来将对象的属性转为加密字符串，然后保存到数据库中。
+    password: XDV71a+xqStEA3WH
 
 mybatis-plus-join:
   banner: false # 关闭控制台的 Banner 打印

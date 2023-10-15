@@ -49,7 +49,7 @@ public class YudaoSwaggerAutoConfiguration {
 
     @Bean
     public OpenAPI createApi(SwaggerProperties properties) {
-        System.out.println("创建OpenApi对象");
+
 
         /**
          * addSecurityItem 方法是用来添加安全项（Security Item）到 OpenAPI 文档的。

@@ -102,6 +102,9 @@ public class SecurityFrameworkUtils {
         // 创建 UsernamePasswordAuthenticationToken 对象
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                 loginUser, null, Collections.emptyList());
+        /**
+         * note:关于WebAuthenticationDetailsSource的作用参考 E:\programme\SpringSecurity\博文\spring security增加图形验证码_lemonc168的博客-CSDN博客.pdf
+         */
         authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         return authenticationToken;
     }
